@@ -10,19 +10,20 @@ codebase.
 ## Requirements
 
 - Python 3.10+
+- Poetry
 - `arx` CLI available on `PATH` (or set `ARX_BIN`)
 - Jupyter Notebook/Lab or Quarto with Jupyter support
 
 ## Install
 
 ```bash
-pip install .
+poetry install --with dev
 ```
 
-Register the kernel
+Register the kernel:
 
 ```bash
-python -m arxlang_jupyter_kernel.install --user
+poetry run python -m arxlang_jupyter_kernel.install --user
 ```
 
 Validate installation:
@@ -31,15 +32,19 @@ Validate installation:
 jupyter kernelspec list
 ```
 
-You should see an arx kernelspec with display name ArxLang.
+You should see an `arx` kernelspec with display name `ArxLang`.
 
 ## Execution model
 
-Each cell is compiled and run in a temporary build directory. The kernel keeps a
-session prelude with all previously successful cells. New cells compile as:
-session prelude + current cell. Compilation errors are returned as Jupyter error
-messages. Failed compilations do not update session source. Quarto usage Use the
-arx kernel id in document front matter:
+- Each cell is compiled and run in a temporary build directory.
+- The kernel keeps a session prelude with all previously successful cells.
+- New cells compile as: `session prelude + current cell`.
+- Compilation errors are returned as Jupyter error messages.
+- Failed compilations do not update session source.
+
+## Quarto usage
+
+Use the `arx` kernel id in document front matter:
 
 ```yaml
 ---
@@ -50,13 +55,13 @@ jupyter: arx
 
 ## Environment variables
 
-- `ARX_BIN` Default: arx Path/executable for Arx CLI.
+- `ARX_BIN` Default: `arx` Path/executable for Arx CLI.
 
 - `ARX_COMPILE_ARGS` Default: empty Extra compile args, parsed shell-style.
 
 - `ARX_RUN_ARGS` Default: empty Extra runtime args, parsed shell-style.
 
-- `ARX_KERNEL_KEEP_BUILD` Default: 0 Set to 1 to keep temporary build
+- `ARX_KERNEL_KEEP_BUILD` Default: `0` Set to `1` to keep temporary build
   directories for debugging.
 
 - `ARX_KERNEL_SESSION_FILE` Default: unset Optional file path for persisting
@@ -83,9 +88,12 @@ in `build_compile_command()`.
 
 - `ArxCompileError` with "No such file or directory: 'arx'" Ensure Arx CLI is
   installed or set `ARX_BIN=/full/path/to/arx`.
+
 - Compiles fail due to CLI mismatch Adjust `build_compile_command()` to the
   finalized Arx CLI syntax.
+
 - Need compiler artifacts for debugging Set `ARX_KERNEL_KEEP_BUILD=1` before
   launching Jupyter.
+
 - Kernel installed but not visible Re-run install and verify
   `jupyter kernelspec list` output.

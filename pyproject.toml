@@ -1,16 +1,16 @@
 [build-system]
-requires = ["setuptools>=69", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.8.0"]
+build-backend = "poetry.core.masonry.api"
 
-[project]
+[tool.poetry]
 name = "arxlang-jupyter-kernel"
 version = "0.1.0"
 description = "Jupyter kernel wrapper for the Arx compiled language"
 readme = "README.md"
-requires-python = ">=3.10"
-license = { text = "MIT" }
-authors = [{ name = "Ivan Ogasawara", email = "ivan.ogasawara@gmail.com" }]
-dependencies = ["ipykernel>=6.29", "jupyter-client>=8.6"]
+license = "MIT"
+authors = ["Ivan Ogasawara <ivan.ogasawara@gmail.com>"]
+homepage = "https://github.com/arxlang/arxlang-jupyter-kernel"
+repository = "https://github.com/arxlang/arxlang-jupyter-kernel"
 keywords = ["arx", "jupyter", "kernel", "llvm"]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -20,29 +20,33 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Framework :: Jupyter",
   "Topic :: Software Development :: Compilers",
 ]
+packages = [{ include = "arxlang_jupyter_kernel", from = "src" }]
+include = [
+  { path = "src/arxlang_jupyter_kernel/kernelspec/kernel.json", format = ["sdist", "wheel"] },
+]
 
-[project.urls]
-Homepage = "https://github.com/arxlang/arxlang-jupyter-kernel"
+[tool.poetry.urls]
 Issues = "https://github.com/arxlang/arxlang-jupyter-kernel/issues"
 
-[project.scripts]
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+ipykernel = ">=6.29"
+jupyter-client = ">=8.6"
+
+[tool.poetry.group.dev.dependencies]
+mypy = ">=1.8"
+pytest = ">=8.0"
+ruff = ">=0.5"
+douki = "^0.11.0"
+pre-commit = "^4.5.1"
+
+[tool.poetry.scripts]
 arxlang-kernel-install = "arxlang_jupyter_kernel.install:main"
-
-[project.optional-dependencies]
-dev = ["mypy>=1.8", "pytest>=8.0", "ruff>=0.5"]
-
-[tool.setuptools]
-package-dir = { "" = "src" }
-include-package-data = true
-
-[tool.setuptools.packages.find]
-where = ["src"]
-
-[tool.setuptools.package-data]
-arxlang_jupyter_kernel = ["kernelspec/kernel.json"]
 
 [tool.ruff]
 line-length = 79

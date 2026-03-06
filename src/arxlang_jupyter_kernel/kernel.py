@@ -1,4 +1,6 @@
-"""Jupyter kernel implementation for ArxLang."""
+"""
+title: Implement the ArxLang Jupyter kernel.
+"""
 
 from __future__ import annotations
 
@@ -21,7 +23,23 @@ from .session import SessionSourceManager
 
 
 class ArxKernel(Kernel, ProcessObserver):
-    """A wrapper-style Jupyter kernel for Arx source execution."""
+    """
+    title: Execute Arx cells by compiling and running native binaries.
+    attributes:
+      _session:
+        type: SessionSourceManager
+      _config:
+        type: ArxCommandConfig
+      _process_lock:
+        type: threading.Lock
+      _current_process:
+        type: subprocess.Popen[str] | None
+    """
+
+    _session: SessionSourceManager
+    _config: ArxCommandConfig
+    _process_lock: threading.Lock
+    _current_process: subprocess.Popen[str] | None
 
     implementation = "arxlang-jupyter-kernel"
     implementation_version = "0.1.0"
@@ -36,7 +54,13 @@ class ArxKernel(Kernel, ProcessObserver):
     }
 
     def __init__(self, **kwargs: Any) -> None:
-        """Initialize kernel state."""
+        """
+        title: Initialize kernel state.
+        parameters:
+          kwargs:
+            type: Any
+            variadic: keyword
+        """
         super().__init__(**kwargs)
         self._session = SessionSourceManager.from_env()
         self._config = ArxCommandConfig.from_env()
@@ -45,38 +69,51 @@ class ArxKernel(Kernel, ProcessObserver):
 
     def do_execute(
         self,
-        code: str,
-        silent: bool,
-        store_history: bool = True,
-        user_expressions: dict[str, Any] | None = None,
-        allow_stdin: bool = False,
+        code: Any,
+        silent: Any,
+        store_history: Any = True,
+        user_expressions: Any = None,
+        allow_stdin: Any = False,
+        *,
+        cell_meta: Any = None,
+        cell_id: Any = None,
     ) -> dict[str, Any]:
-        """Compile and execute one Arx cell.
-
-        Parameters
-        ----------
-        code : str
-            User-provided cell code.
-        silent : bool
-            Whether execution should suppress output messages.
-        store_history : bool, optional
-            Whether this execution should be added to history/session state.
-        user_expressions : dict[str, Any] | None, optional
-            User expressions from the Jupyter protocol.
-        allow_stdin : bool, optional
-            Whether stdin is allowed. Unused by this kernel.
-
-        Returns
-        -------
-        dict[str, Any]
-            Jupyter execute reply payload.
         """
-        _ = allow_stdin
-        expressions = user_expressions or {}
-        if not code.strip():
+        title: Compile and execute one Arx cell.
+        parameters:
+          code:
+            type: Any
+          silent:
+            type: Any
+          store_history:
+            type: Any
+          user_expressions:
+            type: Any
+          allow_stdin:
+            type: Any
+          cell_meta:
+            type: Any
+          cell_id:
+            type: Any
+        returns:
+          type: dict[str, Any]
+        """
+        _ = (allow_stdin, cell_meta, cell_id)
+        code_text = code if isinstance(code, str) else str(code)
+        silent_flag = bool(silent)
+        store_history_flag = bool(store_history)
+
+        if isinstance(user_expressions, dict):
+            expressions = {
+                str(key): value for key, value in user_expressions.items()
+            }
+        else:
+            expressions = {}
+
+        if not code_text.strip():
             return self._ok_reply(expressions)
 
-        full_source = self._session.build_source(code)
+        full_source = self._session.build_source(code_text)
         try:
             result = compile_and_run(
                 full_source,
@@ -84,56 +121,51 @@ class ArxKernel(Kernel, ProcessObserver):
                 observer=self,
             )
         except ArxCommandError as error:
-            return self._error_reply(error, silent=silent)
+            return self._error_reply(error, silent=silent_flag)
 
-        self._emit_streams(result, silent=silent)
-        if store_history:
-            self._session.append_successful_cell(code)
+        self._emit_streams(result, silent=silent_flag)
+        if store_history_flag:
+            self._session.append_successful_cell(code_text)
         return self._ok_reply(expressions)
 
     def do_interrupt(self) -> dict[str, str]:
-        """Terminate the active subprocess on kernel interrupt.
-
-        Returns
-        -------
-        dict[str, str]
-            Jupyter interrupt reply payload.
+        """
+        title: Terminate the active subprocess on kernel interrupt.
+        returns:
+          type: dict[str, str]
         """
         self._terminate_current_process()
         return {"status": "ok"}
 
     def set_process(self, process: subprocess.Popen[str]) -> None:
-        """Track a subprocess so interrupts can terminate it.
-
-        Parameters
-        ----------
-        process : subprocess.Popen[str]
-            Active subprocess to track.
+        """
+        title: Track a subprocess so interrupts can terminate it.
+        parameters:
+          process:
+            type: subprocess.Popen[str]
         """
         with self._process_lock:
             self._current_process = process
 
     def clear_process(self, process: subprocess.Popen[str]) -> None:
-        """Clear tracked subprocess when it exits.
-
-        Parameters
-        ----------
-        process : subprocess.Popen[str]
-            Completed subprocess.
+        """
+        title: Clear tracked subprocess when it exits.
+        parameters:
+          process:
+            type: subprocess.Popen[str]
         """
         with self._process_lock:
             if self._current_process is process:
                 self._current_process = None
 
     def _emit_streams(self, result: ExecutionResult, *, silent: bool) -> None:
-        """Publish compile/run streams to Jupyter clients.
-
-        Parameters
-        ----------
-        result : ExecutionResult
-            Compile and run outputs.
-        silent : bool
-            Whether stream output should be suppressed.
+        """
+        title: Publish compile and run output streams.
+        parameters:
+          result:
+            type: ExecutionResult
+          silent:
+            type: bool
         """
         self._send_stream("stdout", result.compile_stdout, silent=silent)
         self._send_stream("stderr", result.compile_stderr, silent=silent)
@@ -141,7 +173,16 @@ class ArxKernel(Kernel, ProcessObserver):
         self._send_stream("stderr", result.run_stderr, silent=silent)
 
     def _send_stream(self, name: str, text: str, *, silent: bool) -> None:
-        """Send one stream message when output is available."""
+        """
+        title: Send a Jupyter stream message when output is available.
+        parameters:
+          name:
+            type: str
+          text:
+            type: str
+          silent:
+            type: bool
+        """
         if silent or not text:
             return
         self.send_response(
@@ -151,7 +192,14 @@ class ArxKernel(Kernel, ProcessObserver):
         )
 
     def _ok_reply(self, expressions: dict[str, Any]) -> dict[str, Any]:
-        """Build a successful execute reply payload."""
+        """
+        title: Build a successful execute reply payload.
+        parameters:
+          expressions:
+            type: dict[str, Any]
+        returns:
+          type: dict[str, Any]
+        """
         return {
             "status": "ok",
             "execution_count": self.execution_count,
@@ -165,7 +213,16 @@ class ArxKernel(Kernel, ProcessObserver):
         *,
         silent: bool,
     ) -> dict[str, Any]:
-        """Publish and return a failed execute reply payload."""
+        """
+        title: Publish and return a failed execute reply payload.
+        parameters:
+          error:
+            type: ArxCommandError
+          silent:
+            type: bool
+        returns:
+          type: dict[str, Any]
+        """
         ename = self._error_name(error)
         details = error.stderr.strip() or error.stdout.strip() or str(error)
         detail_lines = [line for line in details.splitlines() if line.strip()]
@@ -195,7 +252,14 @@ class ArxKernel(Kernel, ProcessObserver):
         }
 
     def _error_name(self, error: ArxCommandError) -> str:
-        """Map command errors to stable Jupyter `ename` values."""
+        """
+        title: Map command errors to stable Jupyter ename values.
+        parameters:
+          error:
+            type: ArxCommandError
+        returns:
+          type: str
+        """
         if isinstance(error, ArxCompileError):
             return "ArxCompileError"
         if isinstance(error, ArxRuntimeError):
@@ -203,7 +267,9 @@ class ArxKernel(Kernel, ProcessObserver):
         return "ArxKernelError"
 
     def _terminate_current_process(self) -> None:
-        """Terminate the tracked subprocess if it is still running."""
+        """
+        title: Terminate the tracked subprocess if it is running.
+        """
         with self._process_lock:
             process = self._current_process
 

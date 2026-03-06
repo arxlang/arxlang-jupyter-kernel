@@ -1,4 +1,6 @@
-"""Install the ArxLang kernelspec into Jupyter."""
+"""
+title: Install the ArxLang kernelspec into Jupyter.
+"""
 
 from __future__ import annotations
 
@@ -8,7 +10,7 @@ import sys
 import tempfile
 from importlib import resources
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from jupyter_client.kernelspec import KernelSpecManager
 
@@ -16,19 +18,15 @@ KERNEL_ID = "arx"
 
 
 def install_kernelspec(*, user: bool, prefix: str | None) -> Path:
-    """Install the packaged kernelspec.
-
-    Parameters
-    ----------
-    user : bool
-        Install to the current user's Jupyter data directory.
-    prefix : str | None
-        Optional install prefix. Used for virtual-env style installs.
-
-    Returns
-    -------
-    Path
-        Installed kernelspec directory path.
+    """
+    title: Install the packaged kernelspec.
+    parameters:
+      user:
+        type: bool
+      prefix:
+        type: str | None
+    returns:
+      type: Path
     """
     kernel_json = _load_kernel_json()
     argv = kernel_json.get("argv", [])
@@ -58,17 +56,13 @@ def install_kernelspec(*, user: bool, prefix: str | None) -> Path:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """CLI entrypoint for kernelspec installation.
-
-    Parameters
-    ----------
-    argv : list[str] | None, optional
-        CLI arguments. Defaults to `sys.argv[1:]`.
-
-    Returns
-    -------
-    int
-        Process exit code.
+    """
+    title: Run the kernelspec installer CLI.
+    parameters:
+      argv:
+        type: list[str] | None
+    returns:
+      type: int
     """
     parser = argparse.ArgumentParser(
         description="Install the ArxLang Jupyter kernelspec.",
@@ -91,20 +85,23 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def _load_kernel_json() -> dict[str, Any]:
-    """Load packaged kernelspec JSON data.
-
-    Returns
-    -------
-    dict[str, Any]
-        Parsed `kernel.json` content.
     """
-    resource = resources.files("arxlang_jupyter_kernel").joinpath(
-        "kernelspec",
-        "kernel.json",
+    title: Load packaged kernelspec JSON data.
+    returns:
+      type: dict[str, Any]
+    """
+    resource = (
+        resources.files("arxlang_jupyter_kernel")
+        .joinpath("kernelspec")
+        .joinpath("kernel.json")
     )
     with resources.as_file(resource) as kernel_json_path:
         text = kernel_json_path.read_text(encoding="utf-8")
-    return json.loads(text)
+
+    payload = json.loads(text)
+    if not isinstance(payload, dict):
+        raise ValueError("Invalid kernelspec payload: root object must be map")
+    return cast(dict[str, Any], payload)
 
 
 if __name__ == "__main__":
