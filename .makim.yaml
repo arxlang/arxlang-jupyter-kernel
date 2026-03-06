@@ -1,0 +1,226 @@
+groups:
+  default:
+    tasks:
+      clean:
+        help: remove build artifacts, compiled files, and cache
+        run: |
+          rm -fr build/
+          rm -fr dist/
+          rm -fr .eggs/
+          find . -name '*.egg-info' -exec rm -fr {} +
+          find . -name '*.egg' -exec rm -f {} +
+          find . -name '*.pyc' -exec rm -f {} +
+          find . -name '__pycache__' -exec rm -fr {} +
+          find . -name '*.pyo' -exec rm -f {} +
+          find . -name '*~' -exec rm -f {} +
+          rm -f .coverage
+          rm -fr htmlcov/
+          rm -fr .pytest_cache
+
+  tests:
+    tasks:
+      linter:
+        help: run linter tools
+        run: |
+          pre-commit install
+          pre-commit run --all-files
+
+      unit:
+        help: run tests
+        args:
+          path:
+            help: Specify the location of the tests
+            type: string
+            default: ""
+          params:
+            help: Specify parameters to be used for tests
+            type: string
+            default: "-vv"
+        run: |
+          pytest \
+            --cov=arx \
+            --cov-fail-under=90 \
+            --cov-report term-missing \
+            --no-cov-on-fail ${{ args.path }} ${{ args.params }}
+
+      syntax:
+        help: run syntax tests
+        run: |
+          python -m json.tool syntax/arx.syntax.json
+
+      smoke:
+        help: run smoke tests
+        hooks:
+          pre-run:
+            - task: examples.show-tokens
+              args:
+                examples: constant,average,fibonacci,print-star,sum,irx-feature-proposal
+            - task: examples.show-ast
+              args:
+                examples: constant,average,fibonacci,print-star,sum,irx-feature-proposal
+            - task: examples.show-llvm-ir
+              args:
+                examples: constant,average,fibonacci,print-star,sum
+            - task: examples.emit-object
+              args:
+                examples: constant,average,fibonacci,print-star,sum
+        run: |
+          arx --help
+          arx --version
+      ci:
+        help: run the sames tests executed on CI
+        hooks:
+          pre-run:
+            - task: tests.unit
+            - task: tests.smoke
+            - task: tests.linter
+
+  examples:
+    tasks:
+      show-tokens:
+        help: Emit tokens for input file
+        args:
+          examples:
+            help: The examples name separated by comma `,`
+            type: string
+            required: true
+        run: |
+          import subprocess
+
+          for name in "${{ args.examples }}".split(","):
+            print(f" show tokens: {name} ".center(80, "="))
+            result = subprocess.run(
+              ["arx", "--show-tokens", f"examples/{name}.x"],
+              capture_output=True,
+              text=True,
+              check=True,
+            )
+            output = result.stdout.strip()
+            if not output:
+              raise RuntimeError(f"show-tokens produced no output for: {name}")
+            print(output)
+      show-ast:
+        help: Emit ast for input file
+        args:
+          examples:
+            help: The examples name separated by comma `,`
+            type: string
+            required: true
+        run: |
+          import subprocess
+
+          for name in "${{ args.examples }}".split(","):
+            print(f" show ast: {name} ".center(80, "="))
+            result = subprocess.run(
+              ["arx", "--show-ast", f"examples/{name}.x"],
+              capture_output=True,
+              text=True,
+              check=True,
+            )
+            output = result.stdout.strip()
+            if not output:
+              raise RuntimeError(f"show-ast produced no output for: {name}")
+            if output == "Block":
+              raise RuntimeError(
+                "show-ast regression: got only 'Block'. "
+                f"example={name}"
+              )
+            print(output)
+      show-llvm-ir:
+        help: Emit ast for input file
+        args:
+          examples:
+            help: The examples name separated by comma `,`
+            type: string
+            required: true
+        run: |
+          import subprocess
+
+          for name in "${{ args.examples }}".split(","):
+            print(f" show llvm ir: {name} ".center(80, "="))
+            result = subprocess.run(
+              ["arx", "--show-llvm-ir", f"examples/{name}.x"],
+              capture_output=True,
+              text=True,
+              check=True,
+            )
+            output = result.stdout.strip()
+            if "; ModuleID" not in output:
+              raise RuntimeError(
+                "show-llvm-ir output missing LLVM header for: "
+                f"{name}"
+              )
+            print(output)
+      emit-object:
+        help: Emit ast for input file
+        args:
+          examples:
+            help: The examples name separated by comma `,`
+            type: string
+            required: true
+        run: |
+          import subprocess
+
+          from pathlib import Path
+
+          output_dir = Path("build/smoke")
+          output_dir.mkdir(parents=True, exist_ok=True)
+
+          for name in "${{ args.examples }}".split(","):
+            print(f" emit object: {name} ".center(80, "="))
+            output_file = output_dir / name
+            if output_file.exists():
+              output_file.unlink()
+            subprocess.run(
+              [
+                "arx",
+                f"examples/{name}.x",
+                "--lib",
+                "--output-file",
+                str(output_file),
+              ],
+              check=True,
+            )
+            if not output_file.exists() or output_file.stat().st_size == 0:
+              raise RuntimeError(
+                "emit-object did not produce a valid artifact for: "
+                f"{name}"
+              )
+            print(str(output_file))
+
+  docs:
+    tasks:
+      build:
+        help: build documentation
+        run: |
+          mkdocs build --config-file mkdocs.yaml
+          echo "arxlang.org" > ./build/CNAME
+
+      preview:
+        help: preview documentation page locally
+        run: mkdocs serve --watch docs --config-file mkdocs.yaml
+
+  release:
+    vars:
+      app: |
+        npx --yes \
+          -p semantic-release \
+          -p conventional-changelog-conventionalcommits \
+          -p "@semantic-release/commit-analyzer" \
+          -p "@semantic-release/release-notes-generator" \
+          -p "@semantic-release/changelog" \
+          -p "@semantic-release/exec" \
+          -p "@semantic-release/github" \
+          -p "@semantic-release/git" \
+          -p "@google/semantic-release-replace-plugin" \
+          semantic-release
+
+    tasks:
+      ci:
+        help: run semantic release on CI
+        run: ${{ vars.app }} --ci
+
+      dry:
+        help: run semantic release in dry-run mode
+        run: |
+          ${{ vars.app }} --dry-run

@@ -1,0 +1,75 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "arxlang-jupyter-kernel"
+version = "0.1.0"
+description = "Jupyter kernel wrapper for the Arx compiled language"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Ivan Ogasawara", email = "ivan.ogasawara@gmail.com" }]
+dependencies = ["ipykernel>=6.29", "jupyter-client>=8.6"]
+keywords = ["arx", "jupyter", "kernel", "llvm"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Framework :: Jupyter",
+  "Topic :: Software Development :: Compilers",
+]
+
+[project.urls]
+Homepage = "https://github.com/arxlang/arxlang-jupyter-kernel"
+Issues = "https://github.com/arxlang/arxlang-jupyter-kernel/issues"
+
+[project.scripts]
+arxlang-kernel-install = "arxlang_jupyter_kernel.install:main"
+
+[project.optional-dependencies]
+dev = ["mypy>=1.8", "pytest>=8.0", "ruff>=0.5"]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+arxlang_jupyter_kernel = ["kernelspec/kernel.json"]
+
+[tool.ruff]
+line-length = 79
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "C4"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+[tool.mypy]
+python_version = "3.10"
+mypy_path = "src"
+files = ["src", "tests"]
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+strict_equality = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

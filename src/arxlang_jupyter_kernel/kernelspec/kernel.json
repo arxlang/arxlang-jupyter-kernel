@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "python",
+    "-m",
+    "arxlang_jupyter_kernel",
+    "-f",
+    "{connection_file}"
+  ],
+  "display_name": "ArxLang",
+  "language": "arx",
+  "metadata": {}
+}

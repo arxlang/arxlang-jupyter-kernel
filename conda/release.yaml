@@ -1,0 +1,18 @@
+name: arxlang-jupyter-kernel
+channels:
+  - nodefaults
+  - conda-forge
+dependencies:
+  - clang 14.*
+  - clangdev 14.*
+  - graphviz
+  - pip
+  - poetry >=1.5
+  - python
+  - nodejs # used by semantic-release
+  - shellcheck
+  - pip
+  - pip:
+      # fix issues with distlib
+      - paginate
+      - pyrepl
