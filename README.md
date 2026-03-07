@@ -17,7 +17,7 @@ codebase.
 ## Install
 
 ```bash
-poetry install --with dev
+poetry install
 ```
 
 Register the kernel:
@@ -56,14 +56,10 @@ jupyter: arx
 ## Environment variables
 
 - `ARX_BIN` Default: `arx` Path/executable for Arx CLI.
-
 - `ARX_COMPILE_ARGS` Default: empty Extra compile args, parsed shell-style.
-
 - `ARX_RUN_ARGS` Default: empty Extra runtime args, parsed shell-style.
-
 - `ARX_KERNEL_KEEP_BUILD` Default: `0` Set to `1` to keep temporary build
   directories for debugging.
-
 - `ARX_KERNEL_SESSION_FILE` Default: unset Optional file path for persisting
   successful session source.
 
@@ -88,12 +84,9 @@ in `build_compile_command()`.
 
 - `ArxCompileError` with "No such file or directory: 'arx'" Ensure Arx CLI is
   installed or set `ARX_BIN=/full/path/to/arx`.
-
 - Compiles fail due to CLI mismatch Adjust `build_compile_command()` to the
   finalized Arx CLI syntax.
-
 - Need compiler artifacts for debugging Set `ARX_KERNEL_KEEP_BUILD=1` before
   launching Jupyter.
-
 - Kernel installed but not visible Re-run install and verify
   `jupyter kernelspec list` output.
