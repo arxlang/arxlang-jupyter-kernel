@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 name = "arxlang-jupyter-kernel"
 version = "0.1.0"  # semantic-release
-description = "Jupyter kernel wrapper for the Arx compiled language"
+description = "Jupyter kernel wrapper for the ArxLang compiled language"
 readme = "README.md"
 license = "MIT"
 authors = ["Ivan Ogasawara <ivan.ogasawara@gmail.com>"]
