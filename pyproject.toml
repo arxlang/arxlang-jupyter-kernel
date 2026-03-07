@@ -44,6 +44,7 @@ pytest = ">=8.0"
 ruff = ">=0.5"
 douki = "^0.11.0"
 pre-commit = "^4.5.1"
+makim = "1.27.0"
 
 [tool.poetry.scripts]
 arxlang-kernel-install = "arxlang_jupyter_kernel.install:main"
