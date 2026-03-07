@@ -223,4 +223,4 @@ groups:
       dry:
         help: run semantic release in dry-run mode
         run: |
-          ${{ vars.app }} --dry-run
+          ${{ vars.app }} --dry-run --no-ci

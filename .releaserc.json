@@ -8,12 +8,12 @@
       {
         "replacements": [
           {
-            "files": ["src/arx/__init__.py"],
-            "from": "return \".*\"  # semantic-release",
-            "to": "return \"${nextRelease.version}\"  # semantic-release",
+            "files": ["src/arxlang_jupyter_kernel/__init__.py"],
+            "from": "__version__ = \".*\"",
+            "to": "__version__ = \"${nextRelease.version}\"",
             "results": [
               {
-                "file": "src/arx/__init__.py",
+                "file": "src/arxlang_jupyter_kernel/__init__.py",
                 "hasChanged": true,
                 "numMatches": 1,
                 "numReplacements": 1
@@ -23,8 +23,8 @@
           },
           {
             "files": ["pyproject.toml"],
-            "from": "version = \".*\"  # semantic-release",
-            "to": "version = \"${nextRelease.version}\"  # semantic-release",
+            "from": "version = \".*\"",
+            "to": "version = \"${nextRelease.version}\"",
             "results": [
               {
                 "file": "pyproject.toml",
@@ -43,14 +43,14 @@
       "@semantic-release/changelog",
       {
         "changelogTitle": "# Release Notes\n---",
-        "changelogFile": "docs/changelog.md"
+        "changelogFile": "CHANGELOG.md"
       }
     ],
     [
       "@semantic-release/exec",
       {
         "prepareCmd": "poetry build",
-        "publishCmd": "poetry publish"
+        "publishCmd": "poetry publish --skip-existing"
       }
     ],
     [
@@ -64,8 +64,8 @@
       {
         "assets": [
           "pyproject.toml",
-          "docs/changelog.md",
-          "src/arx/__init__.py"
+          "CHANGELOG.md",
+          "src/arxlang_jupyter_kernel/__init__.py"
         ],
         "message": "chore(release): ${nextRelease.version}"
       }
