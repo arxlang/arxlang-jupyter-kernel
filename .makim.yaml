@@ -38,7 +38,7 @@ groups:
             default: "-vv"
         run: |
           pytest \
-            --cov=arx \
+            --cov=arxlang_jupyter_kernel \
             --cov-fail-under=90 \
             --cov-report term-missing \
             --no-cov-on-fail ${{ args.path }} ${{ args.params }}
