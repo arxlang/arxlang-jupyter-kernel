@@ -1,4 +1,6 @@
-"""Module entrypoint for launching the Arx Jupyter kernel."""
+"""
+title: Launch the Arx Jupyter kernel module entrypoint.
+"""
 
 from ipykernel.kernelapp import IPKernelApp
 
@@ -6,7 +8,9 @@ from .kernel import ArxKernel
 
 
 def main() -> None:
-    """Launch the Arx kernel via IPKernelApp."""
+    """
+    title: Launch the Arx kernel via IPKernelApp.
+    """
     IPKernelApp.launch_instance(kernel_class=ArxKernel)
 
 

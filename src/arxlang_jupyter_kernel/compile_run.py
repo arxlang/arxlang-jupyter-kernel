@@ -1,4 +1,6 @@
-"""CLI helpers for compiling and running Arx source files."""
+"""
+title: Provide CLI helpers for compiling and running Arx source files.
+"""
 
 from __future__ import annotations
 
@@ -12,31 +14,42 @@ from typing import Protocol
 
 
 class ProcessObserver(Protocol):
-    """Observer interface for tracking active subprocesses."""
+    """
+    title: Define observer methods used to track active subprocesses.
+    """
 
     def set_process(self, process: subprocess.Popen[str]) -> None:
-        """Track a subprocess after it starts."""
+        """
+        title: Track a subprocess after it starts.
+        parameters:
+          process:
+            type: subprocess.Popen[str]
+        """
         ...
 
     def clear_process(self, process: subprocess.Popen[str]) -> None:
-        """Clear a tracked subprocess after it exits."""
+        """
+        title: Clear a tracked subprocess after it exits.
+        parameters:
+          process:
+            type: subprocess.Popen[str]
+        """
         ...
 
 
 @dataclass(frozen=True)
 class ArxCommandConfig:
-    """Command configuration for Arx CLI integration.
-
-    Parameters
-    ----------
-    arx_bin : str
-        Path or executable name for the Arx CLI.
-    compile_args : list[str]
-        Extra arguments appended to the compile command.
-    run_args : list[str]
-        Extra arguments appended to the run command.
-    keep_build : bool
-        Keep temporary build directories for debugging when true.
+    """
+    title: Store command configuration for Arx CLI integration.
+    attributes:
+      arx_bin:
+        type: str
+      compile_args:
+        type: list[str]
+      run_args:
+        type: list[str]
+      keep_build:
+        type: bool
     """
 
     arx_bin: str
@@ -45,15 +58,11 @@ class ArxCommandConfig:
     keep_build: bool
 
     @classmethod
-    def from_env(cls) -> "ArxCommandConfig":
-        """Build command config from environment variables.
-
-        Returns
-        -------
-        ArxCommandConfig
-            Configuration loaded from environment variables:
-            `ARX_BIN`, `ARX_COMPILE_ARGS`, `ARX_RUN_ARGS`, and
-            `ARX_KERNEL_KEEP_BUILD`.
+    def from_env(cls) -> ArxCommandConfig:
+        """
+        title: Build command config from environment variables.
+        returns:
+          type: ArxCommandConfig
         """
         arx_bin = os.environ.get("ARX_BIN", "arx")
         compile_args = _split_shell_like(
@@ -71,7 +80,16 @@ class ArxCommandConfig:
 
 @dataclass(frozen=True)
 class CommandResult:
-    """Result of executing a subprocess command."""
+    """
+    title: Store output from one subprocess invocation.
+    attributes:
+      returncode:
+        type: int
+      stdout:
+        type: str
+      stderr:
+        type: str
+    """
 
     returncode: int
     stdout: str
@@ -80,7 +98,18 @@ class CommandResult:
 
 @dataclass(frozen=True)
 class ExecutionResult:
-    """Outputs gathered from successful compile and run stages."""
+    """
+    title: Store outputs from successful compile and run stages.
+    attributes:
+      compile_stdout:
+        type: str
+      compile_stderr:
+        type: str
+      run_stdout:
+        type: str
+      run_stderr:
+        type: str
+    """
 
     compile_stdout: str
     compile_stderr: str
@@ -89,22 +118,21 @@ class ExecutionResult:
 
 
 class ArxCommandError(RuntimeError):
-    """Base exception for Arx compile/run command failures.
-
-    Parameters
-    ----------
-    stage : str
-        Stage name, usually `"compile"` or `"run"`.
-    command : list[str]
-        Full command that was executed.
-    returncode : int
-        Process exit code.
-    stdout : str
-        Captured standard output.
-    stderr : str
-        Captured standard error.
-    build_dir : Path
-        Build directory used for this execution.
+    """
+    title: Represent a failure from the Arx compile or run command.
+    attributes:
+      stage:
+        type: str
+      command:
+        type: list[str]
+      returncode:
+        type: int
+      stdout:
+        type: str
+      stderr:
+        type: str
+      build_dir:
+        type: Path
     """
 
     stage: str
@@ -139,11 +167,41 @@ class ArxCommandError(RuntimeError):
 
 
 class ArxCompileError(ArxCommandError):
-    """Compile-stage failure."""
+    """
+    title: Represent a compile stage failure.
+    attributes:
+      stage:
+        type: str
+      command:
+        type: list[str]
+      returncode:
+        type: int
+      stdout:
+        type: str
+      stderr:
+        type: str
+      build_dir:
+        type: Path
+    """
 
 
 class ArxRuntimeError(ArxCommandError):
-    """Run-stage failure."""
+    """
+    title: Represent a runtime stage failure.
+    attributes:
+      stage:
+        type: str
+      command:
+        type: list[str]
+      returncode:
+        type: int
+      stdout:
+        type: str
+      stderr:
+        type: str
+      build_dir:
+        type: Path
+    """
 
 
 def build_compile_command(
@@ -152,26 +210,17 @@ def build_compile_command(
     source_path: Path,
     binary_path: Path,
 ) -> list[str]:
-    """Build the Arx compile command.
-
-    Parameters
-    ----------
-    config : ArxCommandConfig
-        Active command configuration.
-    source_path : Path
-        Path to the generated source file.
-    binary_path : Path
-        Target path for the compiled executable.
-
-    Returns
-    -------
-    list[str]
-        Command tokens for subprocess execution.
-
-    Notes
-    -----
-    TODO: Confirm the final Arx CLI contract. This default assumes:
-    `arx build <source> -o <binary>`.
+    """
+    title: Build the Arx compile command.
+    parameters:
+      config:
+        type: ArxCommandConfig
+      source_path:
+        type: Path
+      binary_path:
+        type: Path
+    returns:
+      type: list[str]
     """
     command = [
         config.arx_bin,
@@ -189,19 +238,15 @@ def build_run_command(
     config: ArxCommandConfig,
     binary_path: Path,
 ) -> list[str]:
-    """Build the command used to run the compiled binary.
-
-    Parameters
-    ----------
-    config : ArxCommandConfig
-        Active command configuration.
-    binary_path : Path
-        Path to the compiled executable.
-
-    Returns
-    -------
-    list[str]
-        Command tokens for subprocess execution.
+    """
+    title: Build the command used to run the compiled binary.
+    parameters:
+      config:
+        type: ArxCommandConfig
+      binary_path:
+        type: Path
+    returns:
+      type: list[str]
     """
     command = [str(binary_path)]
     command.extend(config.run_args)
@@ -214,28 +259,17 @@ def compile_and_run(
     config: ArxCommandConfig | None = None,
     observer: ProcessObserver | None = None,
 ) -> ExecutionResult:
-    """Compile and run Arx source in a temporary build directory.
-
-    Parameters
-    ----------
-    source : str
-        Full Arx source to compile.
-    config : ArxCommandConfig | None, optional
-        Command configuration. If omitted, values are read from env vars.
-    observer : ProcessObserver | None, optional
-        Process observer used by the kernel for interrupt handling.
-
-    Returns
-    -------
-    ExecutionResult
-        Captured outputs from compile and run stages.
-
-    Raises
-    ------
-    ArxCompileError
-        Raised when the compile command exits non-zero.
-    ArxRuntimeError
-        Raised when the binary exits non-zero.
+    """
+    title: Compile and run Arx source in a temporary build directory.
+    parameters:
+      source:
+        type: str
+      config:
+        type: ArxCommandConfig | None
+      observer:
+        type: ProcessObserver | None
+    returns:
+      type: ExecutionResult
     """
     effective_config = config or ArxCommandConfig.from_env()
     temp_dir: tempfile.TemporaryDirectory[str] | None = None
@@ -274,7 +308,9 @@ def compile_and_run(
             config=effective_config,
             binary_path=binary_path,
         )
-        run_result = _run_command(run_command, cwd=build_dir, observer=observer)
+        run_result = _run_command(
+            run_command, cwd=build_dir, observer=observer
+        )
         if run_result.returncode != 0:
             raise ArxRuntimeError(
                 stage="run",
@@ -302,21 +338,17 @@ def _run_command(
     cwd: Path,
     observer: ProcessObserver | None = None,
 ) -> CommandResult:
-    """Run a subprocess command and capture its outputs.
-
-    Parameters
-    ----------
-    command : list[str]
-        Command tokens to execute.
-    cwd : Path
-        Working directory for process execution.
-    observer : ProcessObserver | None, optional
-        Observer used for active process tracking.
-
-    Returns
-    -------
-    CommandResult
-        Captured return code, stdout, and stderr.
+    """
+    title: Run a subprocess command and capture its outputs.
+    parameters:
+      command:
+        type: list[str]
+      cwd:
+        type: Path
+      observer:
+        type: ProcessObserver | None
+    returns:
+      type: CommandResult
     """
     try:
         process = subprocess.Popen(
@@ -342,17 +374,13 @@ def _run_command(
 
 
 def _split_shell_like(raw_value: str) -> list[str]:
-    """Split shell-like argument strings into command tokens.
-
-    Parameters
-    ----------
-    raw_value : str
-        Argument string from an environment variable.
-
-    Returns
-    -------
-    list[str]
-        Tokenized command arguments.
+    """
+    title: Split shell-like argument strings into command tokens.
+    parameters:
+      raw_value:
+        type: str
+    returns:
+      type: list[str]
     """
     if not raw_value.strip():
         return []
@@ -360,17 +388,13 @@ def _split_shell_like(raw_value: str) -> list[str]:
 
 
 def _parse_bool(raw_value: str | None) -> bool:
-    """Parse a boolean-like environment value.
-
-    Parameters
-    ----------
-    raw_value : str | None
-        Input value from an environment variable.
-
-    Returns
-    -------
-    bool
-        True for common truthy values, otherwise False.
+    """
+    title: Parse a boolean-like environment value.
+    parameters:
+      raw_value:
+        type: str | None
+    returns:
+      type: bool
     """
     if raw_value is None:
         return False
@@ -378,5 +402,9 @@ def _parse_bool(raw_value: str | None) -> bool:
 
 
 def _binary_name() -> str:
-    """Return a platform-specific executable filename."""
+    """
+    title: Return a platform-specific executable filename.
+    returns:
+      type: str
+    """
     return "main.exe" if os.name == "nt" else "main"
