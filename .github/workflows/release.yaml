@@ -36,7 +36,7 @@ jobs:
           python-version: "3.10"
 
       - name: Install deps
-        run: poetry install --with dev --sync
+        run: poetry install
 
       - name: Run semantic release dry-run
         if: ${{ github.event_name != 'workflow_dispatch' }}
