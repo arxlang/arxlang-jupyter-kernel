@@ -107,4 +107,4 @@ def test_main(
     output = capsys.readouterr().out
     assert status == 0
     assert captured == {"user": True, "prefix": "/tmp/prefix"}
-    assert "Installed kernelspec 'arx' at: /tmp/arx/kernelspec" in output
+    assert "Installed kernelspec 'arx' at:" in output

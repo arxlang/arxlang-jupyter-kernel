@@ -224,9 +224,8 @@ def build_compile_command(
     """
     command = [
         config.arx_bin,
-        "build",
         str(source_path),
-        "-o",
+        "--output-file",
         str(binary_path),
     ]
     command.extend(config.compile_args)
@@ -280,7 +279,7 @@ def compile_and_run(
         build_dir = Path(temp_dir.name)
 
     try:
-        source_path = build_dir / "main.arx"
+        source_path = build_dir / "main.x"
         binary_path = build_dir / _binary_name()
         source_path.write_text(source, encoding="utf-8")
 

@@ -59,7 +59,7 @@ def test_build_commands() -> None:
         run_args=["--verbose"],
         keep_build=False,
     )
-    source_path = Path("/tmp/main.arx")
+    source_path = Path("/tmp/main.x")
     binary_path = Path("/tmp/main")
 
     compile_command = build_compile_command(
@@ -69,15 +69,15 @@ def test_build_commands() -> None:
     )
     run_command = build_run_command(config=config, binary_path=binary_path)
 
-    assert compile_command == [
-        "arx",
-        "build",
-        "/tmp/main.arx",
-        "-o",
-        "/tmp/main",
-        "--emit-ir",
-    ]
-    assert run_command == ["/tmp/main", "--verbose"]
+    assert compile_command[0] == "arx"
+    assert Path(compile_command[1]) == Path("/tmp/main.x")
+    
+    assert compile_command[2] == "--output-file"
+    assert Path(compile_command[3]) == Path("/tmp/main")
+    assert compile_command[4] == "--emit-ir"
+
+    assert Path(run_command[0]) == Path("/tmp/main")
+    assert run_command[1] == "--verbose"
 
 
 def test_compile_and_run_success_cleans_temp(
@@ -95,7 +95,7 @@ def test_compile_and_run_success_cleans_temp(
         _ = observer
         calls.append((command, cwd))
         if len(calls) == 1:
-            assert (cwd / "main.arx").read_text(encoding="utf-8") == source
+            assert (cwd / "main.x").read_text(encoding="utf-8") == source
             return CommandResult(returncode=0, stdout="cc-out", stderr="")
         return CommandResult(returncode=0, stdout="run-out", stderr="run-err")
 
@@ -115,7 +115,10 @@ def test_compile_and_run_success_cleans_temp(
         run_stdout="run-out",
         run_stderr="run-err",
     )
-    assert calls[0][0][0:2] == ["arx", "build"]
+    
+    assert calls[0][0][0] == "arx"
+    assert calls[0][0][1].endswith("main.x")
+
     assert calls[1][0][-1] == "--run-arg"
     assert calls[0][1].exists() is False
 

@@ -20,7 +20,7 @@ def test_from_env_loads_existing_snapshot(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    snapshot = tmp_path / "session.arx"
+    snapshot = tmp_path / "session.x"
     snapshot.write_text("let answer = 42\n", encoding="utf-8")
     monkeypatch.setenv("ARX_KERNEL_SESSION_FILE", str(snapshot))
 
@@ -35,7 +35,7 @@ def test_from_env_loads_existing_snapshot(
 
 
 def test_snapshot_path_missing_file(tmp_path: Path) -> None:
-    session = SessionSourceManager(snapshot_path=tmp_path / "missing.arx")
+    session = SessionSourceManager(snapshot_path=tmp_path / "missing.x")
 
     assert session.source == ""
 
@@ -47,7 +47,7 @@ def test_build_source_when_prelude_empty() -> None:
 
 
 def test_append_and_reset_persist(tmp_path: Path) -> None:
-    snapshot = tmp_path / "nested" / "snapshot.arx"
+    snapshot = tmp_path / "nested" / "snapshot.x"
     session = SessionSourceManager(snapshot_path=snapshot)
 
     session.append_successful_cell("  first()  ")
