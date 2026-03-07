@@ -9,8 +9,8 @@
         "replacements": [
           {
             "files": ["src/arxlang_jupyter_kernel/__init__.py"],
-            "from": "__version__ = \".*\"",
-            "to": "__version__ = \"${nextRelease.version}\"",
+            "from": "__version__ = \".*\"  # semantic-release",
+            "to": "__version__ = \"${nextRelease.version}\"  # semantic-release",
             "results": [
               {
                 "file": "src/arxlang_jupyter_kernel/__init__.py",
@@ -23,8 +23,8 @@
           },
           {
             "files": ["pyproject.toml"],
-            "from": "version = \".*\"",
-            "to": "version = \"${nextRelease.version}\"",
+            "from": "version = \".*\"  # semantic-release",
+            "to": "version = \"${nextRelease.version}\"  # semantic-release",
             "results": [
               {
                 "file": "pyproject.toml",
