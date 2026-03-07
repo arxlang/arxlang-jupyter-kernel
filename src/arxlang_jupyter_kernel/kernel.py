@@ -16,13 +16,12 @@ from .compile_run import (
     ArxCompileError,
     ArxRuntimeError,
     ExecutionResult,
-    ProcessObserver,
     compile_and_run,
 )
 from .session import SessionSourceManager
 
 
-class ArxKernel(Kernel, ProcessObserver):
+class ArxKernel(Kernel):
     """
     title: Execute Arx cells by compiling and running native binaries.
     attributes:

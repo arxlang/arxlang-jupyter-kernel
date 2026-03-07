@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
     steps:
       - name: Checkout
@@ -27,7 +27,7 @@ jobs:
         run: python -m pip install --upgrade poetry
 
       - name: Install dependencies
-        run: poetry install --with dev --no-interaction
+        run: poetry install
 
       - name: Run tests
-        run: poetry run pytest -q
+        run: poetry run pytest -vv
