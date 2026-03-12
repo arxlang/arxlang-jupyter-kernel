@@ -177,7 +177,7 @@ def test_do_execute_compile_error(
 
     error = ArxCompileError(
         stage="compile",
-        command=["arx", "build", "main.arx"],
+        command=["arx", "build", "main.x"],
         returncode=1,
         stdout="",
         stderr="bad line\nother line",
@@ -208,7 +208,7 @@ def test_do_execute_compile_error(
     assert reply["ename"] == "ArxCompileError"
     assert reply["evalue"] == "bad line"
     assert reply["traceback"] == [
-        "Command: arx build main.arx",
+        "Command: arx build main.x",
         "bad line",
         "other line",
     ]
@@ -220,7 +220,7 @@ def test_do_execute_compile_error(
                 "ename": "ArxCompileError",
                 "evalue": "bad line",
                 "traceback": [
-                    "Command: arx build main.arx",
+                    "Command: arx build main.x",
                     "bad line",
                     "other line",
                 ],

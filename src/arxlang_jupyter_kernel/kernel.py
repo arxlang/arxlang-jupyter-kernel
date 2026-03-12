@@ -49,7 +49,7 @@ class ArxKernel(Kernel):
         "name": "arx",
         "version": "0.0.0",
         "mimetype": "text/x-arx",
-        "file_extension": ".arx",
+        "file_extension": ".x",
     }
 
     def __init__(self, **kwargs: Any) -> None:

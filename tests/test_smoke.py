@@ -15,7 +15,7 @@ def test_kernel_class_metadata() -> None:
     title: Validate kernel language metadata.
     """
     assert ArxKernel.language == "arx"
-    assert ArxKernel.language_info["file_extension"] == ".arx"
+    assert ArxKernel.language_info["file_extension"] == ".x"
 
 
 def test_packaged_kernel_json() -> None:
