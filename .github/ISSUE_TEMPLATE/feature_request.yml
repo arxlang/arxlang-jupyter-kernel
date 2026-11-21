@@ -1,0 +1,40 @@
+name: Feature Request
+description: Suggest an idea or enhancement for arxlang-jupyter-kernel
+title: "[Feat]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve `arxlang-jupyter-kernel`!
+        Feel free to brainstorm or discuss feature ideas with the community on [Discord](https://discord.gg/JNKVe8tjQ).
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or Motivation
+      description: Is your feature request related to a problem or workflow limitation?
+      placeholder: A clear and concise description of the limitation or need.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution / Enhancement
+      description: Describe how you would like this feature to work.
+      placeholder: Describe the desired behavior, API, or CLI/kernel option.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Any alternative solutions or workarounds you have considered.
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context, references (e.g. Jupyter protocol specs, Arx CLI behavior), or mockups.

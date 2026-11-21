@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Discord Community
+    url: https://discord.gg/JNKVe8tjQ
+    about: Join the Arx community on Discord to ask questions, chat, or get help.
+  - name: Arx Compiler & Language
+    url: https://github.com/arxlang/arx
+    about: For language-level questions, syntax, or compiler bugs in Arx itself.
