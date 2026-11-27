@@ -1,0 +1,83 @@
+name: Bug Report
+description: Report an issue or bug in arxlang-jupyter-kernel
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue!
+        Please search existing issues before creating a new one. For questions or discussions, you can also join us on [Discord](https://discord.gg/JNKVe8tjQ).
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of what the bug is.
+      placeholder: Describe what happened and why it is unexpected.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproducible Example / Arx Cell Code
+      description: |
+        Provide minimal Arx code and steps to reproduce the issue.
+      placeholder: |
+        1. Start Jupyter with the Arx kernel (`arx`)
+        2. Run cell:
+           ```arx
+           // minimal Arx code here
+           ```
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: A clear description of what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-output
+    attributes:
+      label: Actual Output / Error Traceback
+      description: |
+        Paste the full output, compile error, or runtime traceback from Jupyter.
+      render: shell
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment Information
+      description: Relevant details about your local setup.
+      value: |
+        - OS: [e.g. Linux Ubuntu 22.04, macOS 14, Windows 11]
+        - Python version (`python --version`):
+        - Arx CLI version (`arx --version`):
+        - `arxlang-jupyter-kernel` version:
+        - Jupyter front-end: [e.g. JupyterLab, Classic Notebook, VS Code, Quarto]
+        - Jupyter client / ipykernel version:
+    validations:
+      required: true
+
+  - type: textarea
+    id: configuration
+    attributes:
+      label: Kernel Environment Variables & Configuration
+      description: |
+        If you set any custom Arx environment variables, please list them here (e.g., `ARX_BIN`, `ARX_COMPILE_ARGS`, `ARX_RUN_ARGS`, `ARX_KERNEL_KEEP_BUILD`).
+      placeholder: |
+        ARX_BIN=arx
+        ARX_COMPILE_ARGS=
+        ARX_KERNEL_KEEP_BUILD=0
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context, screenshots, or logs here.
